@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-MOJlsNIcO9E3ZZfsPPAqueSznbbJKVp1jp8OB+pNjYw='; style-src 'unsafe-inline'; connect-src 'none'; img-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Flow Atelier · Etsy yetkilendirmesi</title>
+<style>html{color-scheme:dark;background:#101519;color:#eef2f4;font:16px/1.6 system-ui}body{max-width:620px;margin:10vh auto;padding:24px}h1{font-size:28px}p{color:#adb8c1}label{display:block}textarea{box-sizing:border-box;width:100%;min-height:150px;margin:12px 0;padding:12px;border:1px solid #3a454d;border-radius:8px;background:#181f25;color:#eef2f4;overflow-wrap:anywhere}button{padding:12px 18px;border:0;border-radius:8px;background:#c8ff60;color:#17200d;font:inherit;font-weight:600;cursor:pointer}button:focus-visible,textarea:focus-visible{outline:2px solid #c8ff60;outline-offset:3px}[hidden]{display:none!important}</style>
+</head>
+<body>
+<h1>Etsy izin dönüşü</h1>
+<p id="message" role="status">Bu sayfa Etsy izin bağlantısından açılır. Yetkilendirmeyi Flow Atelier’de başlat.</p>
+<section id="result" hidden>
+<p>Aşağıdaki tam dönüş adresini kopyala. Flow Atelier’de açık olan “Hesabı yetkilendir” penceresinin “Dönüş adresi” alanına yapıştır ve “Yetkilendirmeyi tamamla” düğmesine bas.</p>
+<label for="callback">Tam dönüş adresi</label>
+<textarea id="callback" readonly autocomplete="off" spellcheck="false"></textarea>
+<button id="copy" type="button">Dönüş adresini kopyala</button>
+<p>Bu bağlantıyı sohbetten gönderme. Sayfayı tamamladıktan sonra kapatabilirsin. Mağaza bağlantısı Flow Atelier’de doğrulanana kadar tamamlanmış sayılmaz.</p>
+</section>
+<script>
+'use strict';
+const callback=location.href;
+history.replaceState(null,'',location.pathname);
+const parameters=new URL(callback).searchParams;
+if(!parameters.has('error')&&parameters.getAll('code').length===1&&parameters.get('code')&&parameters.getAll('state').length===1&&parameters.get('state')&&callback.length<16000){
+ document.getElementById('message').textContent='Etsy izin yanıtı alındı. Son adımı Flow Atelier’de tamamla.';
+ document.getElementById('result').hidden=false;
+ const field=document.getElementById('callback');field.value=callback;
+ document.getElementById('copy').onclick=async()=>{try{await navigator.clipboard.writeText(callback);document.getElementById('message').textContent='Kopyalandı. Flow Atelier’deki Dönüş adresi alanına yapıştır.'}catch{field.focus();field.select();document.getElementById('message').textContent='Adres seçildi. Ctrl+C ile kopyalayabilirsin.'}};
+}else if(parameters.has('error'))document.getElementById('message').textContent='Etsy izni tamamlanmadı. Flow Atelier’e dönüp yetkilendirmeyi yeniden başlat.';
+</script>
+</body>
+</html>
